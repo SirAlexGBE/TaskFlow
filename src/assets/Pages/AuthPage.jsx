@@ -2,8 +2,10 @@ import {useState, useEffect} from "react";
 import {motion, AnimatePresence} from "framer-motion";
 import {ToastContainer, toast} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import {useNavigate} from "react-router";
 
 export default function AuthPage() {
+  const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(true);
   const [users, setUsers] = useState([]);
   const [formData, setFormData] = useState({
@@ -108,11 +110,7 @@ export default function AuthPage() {
     );
 
     toast.success("Login successful!");
-
-    // In a real app, you would redirect to dashboard/home page
-    setTimeout(() => {
-      alert("You are now logged in as " + user.fullName);
-    }, 1500);
+    navigate("/");
   };
 
   const formVariants = {
@@ -150,7 +148,7 @@ export default function AuthPage() {
                 <motion.path
                   initial={{pathLength: 0}}
                   animate={{pathLength: 1}}
-                  transition={{duration: 2, repeat: Infinity, repeatType: "loop"}}
+                  transition={{duration: 5, repeat: Infinity, repeatType: "loop"}}
                   stroke="currentColor"
                   strokeWidth="2"
                   strokeLinecap="round"
@@ -175,6 +173,7 @@ export default function AuthPage() {
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                     placeholder="Enter your username"
                     required
+                    autoComplete="Username"
                   />
                 </div>
 
@@ -188,6 +187,7 @@ export default function AuthPage() {
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                     placeholder="Enter your password"
                     required
+                    autoComplete="current-password"
                   />
                 </div>
 
@@ -244,6 +244,7 @@ export default function AuthPage() {
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                     placeholder="Choose a username"
                     required
+                    autoComplete="Username"
                   />
                 </div>
 
@@ -256,6 +257,7 @@ export default function AuthPage() {
                     onChange={handleInputChange}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                     placeholder="Create a password"
+                    autoComplete="new-password"
                     required
                   />
                 </div>
@@ -270,6 +272,7 @@ export default function AuthPage() {
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                     placeholder="Confirm your password"
                     required
+                    autoComplete="new-password"
                   />
                 </div>
 
