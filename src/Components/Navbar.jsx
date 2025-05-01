@@ -9,6 +9,11 @@ export default function Navbar() {
   const {currentUser, logout} = useContext(AuthContext);
   const {theme, toggle} = useContext(ThemeContext);
 
+  const handleThemeToggle = () => {
+    toggle();
+    document.documentElement.classList.toggle("dark", theme === "light");
+  };
+
   return (
     <nav className="sticky top-0 z-50 flex items-center justify-between p-4 bg-blue-900 dark:bg-gray-800">
       {/* Left: App Name & New Task */}
@@ -23,7 +28,7 @@ export default function Navbar() {
 
       {/* Right: Theme Switch, Username, Logout */}
       <div className="flex items-center justify-end space-x-4">
-        <button onClick={toggle} className="p-2 rounded-full bg-blue-800 hover:bg-blue-700 transition">
+        <button onClick={handleThemeToggle} className="p-2 rounded-full bg-blue-800 hover:bg-blue-700 transition">
           {theme === "light" ? "🌜" : "🌞"}
         </button>
         <span className="text-blue-100">{currentUser?.fullName}</span>
