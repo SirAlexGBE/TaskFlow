@@ -1,11 +1,15 @@
-import {useState, useEffect} from "react";
+import {useState, useEffect, useContext} from "react";
 import {motion, AnimatePresence} from "framer-motion";
 import {ToastContainer, toast} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import {useNavigate} from "react-router";
+import {useNavigate} from "react-router-dom";
+
+import {AuthContext} from "../Context/AuthContext";
 
 export default function AuthPage() {
   const navigate = useNavigate();
+  const {currentUser, login} = useContext(AuthContext);
+
   const [isLogin, setIsLogin] = useState(true);
   const [users, setUsers] = useState([]);
   const [formData, setFormData] = useState({
@@ -15,6 +19,11 @@ export default function AuthPage() {
     password: "",
     confirmPassword: "",
   });
+
+  // if already logged in, send to home
+  useEffect(() => {
+    if (currentUser) navigate("/");
+  }, [currentUser, navigate]);
 
   useEffect(() => {
     const storedUsers = localStorage.getItem("users");
@@ -32,7 +41,6 @@ export default function AuthPage() {
 
   const toggleAuthMode = () => {
     setIsLogin(!isLogin);
-    // Reset form data when switching modes
     setFormData({
       fullName: "",
       email: "",
@@ -44,21 +52,15 @@ export default function AuthPage() {
 
   const handleSignup = (e) => {
     e.preventDefault();
-
-    // Validation
     if (formData.password !== formData.confirmPassword) {
       toast.error("Passwords do not match");
       return;
     }
-
-    // Check if username already exists
-    if (users.some((user) => user.username === formData.username)) {
+    if (users.some((u) => u.username === formData.username)) {
       toast.error("Username already exists");
       return;
     }
-
-    // Check if email already exists
-    if (users.some((user) => user.email === formData.email)) {
+    if (users.some((u) => u.email === formData.email)) {
       toast.error("Email already exists");
       return;
     }
@@ -69,81 +71,48 @@ export default function AuthPage() {
       username: formData.username,
       password: formData.password,
     };
-
     const updatedUsers = [...users, newUser];
+    localStorage.setItem("users", JSON.stringify(updatedUsers));
     setUsers(updatedUsers);
 
-    // Save to localStorage
-    localStorage.setItem("users", JSON.stringify(updatedUsers));
-
-    // Show success toast
     toast.success("Account created successfully!");
-
-    // Switch to login
+    // after signup, auto-login
     setTimeout(() => {
-      setIsLogin(true);
+      login({username: newUser.username, fullName: newUser.fullName});
     }, 1500);
   };
 
   const handleLogin = (e) => {
     e.preventDefault();
-
     const user = users.find((u) => u.username === formData.username);
-
     if (!user) {
       toast.error("User not found");
       return;
     }
-
     if (user.password !== formData.password) {
       toast.error("Incorrect password");
       return;
     }
 
-    // Login successful - store current user
-    localStorage.setItem(
-      "currentUser",
-      JSON.stringify({
-        username: user.username,
-        fullName: user.fullName,
-      })
-    );
-
     toast.success("Login successful!");
-    navigate("/");
+    login({username: user.username, fullName: user.fullName});
   };
 
   const formVariants = {
-    hidden: {
-      opacity: 0,
-      y: 20,
-    },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.3,
-      },
-    },
-    exit: {
-      opacity: 0,
-      y: -20,
-      transition: {
-        duration: 0.3,
-      },
-    },
+    hidden: {opacity: 0, y: 20},
+    visible: {opacity: 1, y: 0, transition: {duration: 0.3}},
+    exit: {opacity: 0, y: -20, transition: {duration: 0.3}},
   };
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-      <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
+      <ToastContainer position="top-right" autoClose={3000} />
 
       <div className="w-full max-w-md bg-white rounded-xl shadow-xl overflow-hidden">
         <div className="bg-gradient-to-r from-blue-900 to-indigo-600 p-6 text-center">
           <h2 className="text-2xl font-bold text-white">{isLogin ? "Login to Your Account" : "Create an Account"}</h2>
           {isLogin && (
             <div className="w-full h-40 flex justify-center items-center">
-              {/* SVG animation for login only */}
               <svg className="w-32 h-32 text-white" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <motion.path
                   initial={{pathLength: 0}}
@@ -195,7 +164,6 @@ export default function AuthPage() {
                   Login
                 </button>
               </form>
-
               <div className="mt-4 text-center">
                 <p className="text-sm text-gray-600">
                   Don't have an account?{" "}
@@ -206,7 +174,7 @@ export default function AuthPage() {
               </div>
             </motion.div>
           ) : (
-            <div className="p-6">
+            <motion.div key="signup" variants={formVariants} initial="hidden" animate="visible" exit="exit" className="p-6">
               <form onSubmit={handleSignup} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
@@ -280,7 +248,6 @@ export default function AuthPage() {
                   Sign Up
                 </button>
               </form>
-
               <div className="mt-4 text-center">
                 <p className="text-sm text-gray-600">
                   Already have an account?{" "}
@@ -289,7 +256,7 @@ export default function AuthPage() {
                   </button>
                 </p>
               </div>
-            </div>
+            </motion.div>
           )}
         </AnimatePresence>
       </div>
