@@ -21,9 +21,6 @@ export default function Navbar() {
         <Link to="/" className="text-white font-bold text-xl hover:opacity-90">
           Taskflow
         </Link>
-        <Link to="/create" className="text-blue-200 hover:text-white transition">
-          + New Task
-        </Link>
       </div>
 
       {/* Right: Theme Switch, Username, Logout */}

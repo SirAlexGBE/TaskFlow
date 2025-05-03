@@ -4,7 +4,7 @@ import Navbar from "../Components/Navbar";
 
 const STORAGE_KEY = "tasks";
 
-export default function CreateTask() {
+export default function CreateTask({onAddTask}) {
   const [task, setTask] = useState({title: "", description: "", status: "To Do"});
   const navigate = useNavigate();
 
@@ -16,28 +16,8 @@ export default function CreateTask() {
   const handleSubmit = (e) => {
     e.preventDefault();
     try {
-      // Get existing tasks from localStorage
-      const tasksString = localStorage.getItem(STORAGE_KEY);
-      const tasks = tasksString ? JSON.parse(tasksString) : [];
-
-      if (!Array.isArray(tasks)) {
-        console.error("Stored tasks is not an array:", tasks);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify([]));
-      }
-
-      // Create new task with ID
       const newTask = {...task, id: Date.now()};
-
-      // Add new task to array
-      const updatedTasks = Array.isArray(tasks) ? [...tasks, newTask] : [newTask];
-
-      // Save updated tasks to localStorage
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedTasks));
-
-      console.log("Task successfully added:", newTask);
-      console.log("Updated tasks in localStorage:", updatedTasks);
-
-      // Navigate back to home page
+      onAddTask(newTask);
       navigate("/");
     } catch (error) {
       console.error("Error saving task:", error);

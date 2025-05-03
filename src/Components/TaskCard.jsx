@@ -1,15 +1,28 @@
 import React from "react";
 import {Link, useNavigate} from "react-router-dom";
 import {toast} from "react-toastify";
+import Swal from "sweetalert2";
 
 export default function TaskCard({task, onDelete}) {
   const navigate = useNavigate();
 
+  console.log("TaskCard rendering task:", task);
+
   const handleDelete = () => {
-    if (window.confirm("Are you sure you want to delete this task?")) {
-      onDelete(task.id);
-      toast.success("Task deleted");
-    }
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        onDelete(task.id);
+        toast.success("Task deleted");
+      }
+    });
   };
 
   return (
