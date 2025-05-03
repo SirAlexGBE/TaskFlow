@@ -16,8 +16,11 @@ export function ThemeProvider({children}) {
       root.classList.remove("dark");
     }
 
+    console.log("Updated html class list:", root.classList);
     localStorage.setItem("theme", theme);
   }, [theme]);
+
+  console.log("ThemeProvider rendered with theme:", theme);
 
   const toggle = () => setTheme((prev) => (prev === "light" ? "dark" : "light"));
 

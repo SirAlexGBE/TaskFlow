@@ -1,4 +1,3 @@
-// File: src/pages/Home.js
 import React, {useState} from "react";
 import Navbar from "../Components/Navbar";
 import TaskCard from "../Components/TaskCard";

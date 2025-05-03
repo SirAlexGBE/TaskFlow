@@ -7,7 +7,6 @@ const DetailsPage = ({tasks, onDelete}) => {
   const navigate = useNavigate();
   const task = tasks?.find((task) => String(task.id) === id);
 
-  // Removed all console.log statements
   if (!tasks || tasks.length === 0) {
     return <div>Loading...</div>;
   }

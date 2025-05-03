@@ -20,7 +20,6 @@ export default function AuthPage() {
     confirmPassword: "",
   });
 
-  // if already logged in, send to home
   useEffect(() => {
     if (currentUser) navigate("/");
   }, [currentUser, navigate]);
@@ -76,7 +75,6 @@ export default function AuthPage() {
     setUsers(updatedUsers);
 
     toast.success("Account created successfully!");
-    // after signup, auto-login
     setTimeout(() => {
       login({username: newUser.username, fullName: newUser.fullName});
     }, 1500);

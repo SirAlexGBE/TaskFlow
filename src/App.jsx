@@ -1,9 +1,7 @@
-// File: src/App.js
 import React, {useState, useEffect} from "react";
 import "./index.css";
 import {Routes, Route} from "react-router-dom";
 import {AuthProvider} from "./Context/AuthContext";
-import {ThemeProvider} from "./Context/ThemeContext";
 
 import AuthPage from "./Pages/AuthPage";
 import Home from "./Pages/Home";
@@ -20,13 +18,7 @@ function App() {
   }, []);
 
   const handleUpdateTask = (taskId, updatedTask) => {
-    setTasks((prevTasks) =>
-      prevTasks.map((task) =>
-        task.id === taskId
-          ? {...task, ...updatedTask} // Merge the original task with updates
-          : task
-      )
-    );
+    setTasks((prevTasks) => prevTasks.map((task) => (task.id === taskId ? {...task, ...updatedTask} : task)));
     localStorage.setItem("tasks", JSON.stringify(tasks));
   };
 
@@ -44,15 +36,13 @@ function App() {
 
   return (
     <AuthProvider>
-      <ThemeProvider>
-        <Routes>
-          <Route path="/" element={<Home tasks={tasks} onUpdate={handleUpdateTask} onDelete={handleDeleteTask} onAddTask={handleAddTask} />} />
-          <Route path="/auth" element={<AuthPage />} />
-          <Route path="/details/:id" element={<DetailsPage tasks={tasks} onDelete={handleDeleteTask} />} />
-          <Route path="/edit/:id" element={<EditPage tasks={tasks} onUpdate={handleUpdateTask} />} />
-          <Route path="*" element={<PagenotFound />} />
-        </Routes>
-      </ThemeProvider>
+      <Routes>
+        <Route path="/" element={<Home tasks={tasks} onUpdate={handleUpdateTask} onDelete={handleDeleteTask} onAddTask={handleAddTask} />} />
+        <Route path="/auth" element={<AuthPage />} />
+        <Route path="/details/:id" element={<DetailsPage tasks={tasks} onDelete={handleDeleteTask} />} />
+        <Route path="/edit/:id" element={<EditPage tasks={tasks} onUpdate={handleUpdateTask} />} />
+        <Route path="*" element={<PagenotFound />} />
+      </Routes>
     </AuthProvider>
   );
 }

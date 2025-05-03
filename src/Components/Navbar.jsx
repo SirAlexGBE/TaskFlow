@@ -10,20 +10,25 @@ export default function Navbar() {
   const {currentUser, logout} = useContext(AuthContext);
   const {theme, toggle} = useContext(ThemeContext);
 
+  console.log("Navbar rendered with ThemeContext:", useContext(ThemeContext));
+
+  if (!theme || !toggle) {
+    console.error("ThemeContext is undefined. Ensure ThemeProvider is wrapping the component tree.");
+    return null;
+  }
+
   const handleThemeToggle = () => {
-    toggle(); // This will update the theme state, and the ThemeProvider's useEffect will handle toggling classes
+    toggle();
   };
 
   return (
     <nav className="sticky top-0 z-50 flex items-center justify-between p-4 bg-blue-900 dark:bg-gray-800">
-      {/* Left: App Name & New Task */}
       <div className="flex items-center space-x-6">
         <Link to="/" className="text-white font-bold text-xl hover:opacity-90">
           Taskflow
         </Link>
       </div>
 
-      {/* Right: Theme Switch, Username, Logout */}
       <div className="flex items-center space-x-4 ml-auto">
         <button onClick={handleThemeToggle} className="p-2 rounded-full bg-blue-800 hover:bg-blue-700 transition" aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}>
           {theme === "dark" ? <Sun size={18} className="text-blue-100" /> : <Moon size={18} className="text-blue-100" />}
