@@ -15,27 +15,51 @@ export default function Home() {
 
   // Load saved tasks on mount
   useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-    setTasks(stored);
+    const loadTasks = () => {
+      try {
+        const stored = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+        console.log("Tasks loaded from localStorage:", stored);
+        setTasks(stored);
+      } catch (error) {
+        console.error("Error loading tasks:", error);
+        setTasks([]);
+      }
+    };
+
+    loadTasks();
+
+    // Add event listener to detect changes in localStorage from other tabs/windows
+    window.addEventListener("storage", (e) => {
+      if (e.key === STORAGE_KEY) {
+        loadTasks();
+      }
+    });
+
+    return () => {
+      window.removeEventListener("storage", loadTasks);
+    };
   }, []);
 
-  // Persist tasks whenever they change
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
-  }, [tasks]);
+  const handleDelete = (id) => {
+    const updatedTasks = tasks.filter((t) => t.id !== id);
+    setTasks(updatedTasks);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedTasks));
+  };
 
-  const handleDelete = (id) => setTasks((prev) => prev.filter((t) => t.id !== id));
-
-  const filtered = tasks.filter((t) => t.title.toLowerCase().includes(filter.toLowerCase()));
+  const filtered = tasks.filter((t) => {
+    if (!t || !t.title) return false;
+    const matchesFilter = t.title.toLowerCase().includes(filter.toLowerCase());
+    return matchesFilter;
+  });
 
   const columns = [
-    {key: "todo", label: "To Do"},
-    {key: "inprogress", label: "In Progress"},
-    {key: "done", label: "Done"},
+    {key: "To Do", label: "To Do"},
+    {key: "In Progress", label: "In Progress"},
+    {key: "Done", label: "Done"},
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-800">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-200">
       <Navbar />
 
       <div className="p-4">
@@ -50,8 +74,8 @@ export default function Home() {
         {/* Task Columns */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {columns.map((col) => (
-            <div key={col.key}>
-              <h2 className="font-bold mb-2 text-xl text-gray-700 dark:text-gray-200">{col.label}</h2>
+            <div className="bg-white p-4 rounded shadow" key={col.key}>
+              <h2 className="font-bold mb-2 text-xl text-black dark:text-gray-600">{col.label}</h2>
               {filtered
                 .filter((t) => t.status === col.key)
                 .map((task) => (
